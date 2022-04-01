@@ -1,0 +1,40 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+
+@page "/todo"
+@inject HttpClient Http
+
+<section>Hello</section>
+<hr />
+<div>World!</div>
+<h1>Todo (@todos.Count(todo => !todo.IsDone))</h1>
+
+<input placeholder="Something todo" @bind="newTodo" />
+<button @onclick="AddTodo">Add todo</button>
+
+<ul>
+    @foreach (var todo in todos)
+    {
+    <li>
+        <input type="checkbox" @bind="todo.IsDone" />
+        <input @bind="todo.Title" />
+    </li>
+    }
+</ul>
+
+@code {
+    private string newTodo;
+    private List<TodoItem> todos = new();
+
+    private void AddTodo()
+    {
+        if (!string.IsNullOrWhiteSpace(newTodo))
+        {
+            TodoItem item = new() { Title = newTodo };
+            todos.Add(item);
+            Http.PostAsJsonAsync<TodoItem>("/api/Todo", item);
+            newTodo = string.Empty;
+        }
+    }
+}
